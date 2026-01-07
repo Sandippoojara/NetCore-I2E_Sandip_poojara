@@ -1,0 +1,10 @@
+﻿@model EventManagementSystem.Models.Event
+
+<h2>Edit Event</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <partial name="Create" model="Model" />
+</form>

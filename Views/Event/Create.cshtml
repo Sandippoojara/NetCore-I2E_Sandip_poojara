@@ -1,0 +1,24 @@
+﻿@model EventManagementSystem.Models.Event
+
+<h2>Create Event</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <label>Title</label>
+    <input asp-for="Title" class="form-control" />
+
+    <label>Description</label>
+    <textarea asp-for="Description" class="form-control"></textarea>
+
+    <label>Date</label>
+    <input asp-for="EventDate" type="date" class="form-control" />
+
+    <label>Location</label>
+    <input asp-for="Location" class="form-control" />
+
+    <label>Capacity</label>
+    <input asp-for="Capacity" class="form-control" />
+
+    <button type="submit">Save</button>
+</form>
