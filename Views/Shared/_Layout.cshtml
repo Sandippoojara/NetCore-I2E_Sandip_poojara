@@ -15,18 +15,16 @@
             @if (User.Identity?.IsAuthenticated ?? false)
             {
                 <span>Welcome, @User.Identity.Name!</span>
- 
-            
                 <form method="post" asp-area="Identity" asp-page="/Account/Logout" style="display:inline">
                     <button type="submit" class="btn btn-link" style="padding:0; border:none; background:none;">Logout</button>
                 </form>
             }
             else
             {
-            <a asp-area="Identity" asp-page="/Account/Login">Login</a>
- 
-            <a asp-area="Identity" asp-page="/Account/Register">Register</a>
-}
+                <a asp-area="Identity" asp-page="/Account/Login">Login</a>
+                <a asp-area="Identity" asp-page="/Account/Register">Register</a>
+            }
+
         </nav>
         <hr />
     </header>

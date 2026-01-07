@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetCore_I2E_Sandip_poojara.Data;
-using NetCore_I2E_Sandip_poojara.Services.Interfaces;
-using NetCore_I2E_Sandip_poojara.Services.Implementations;
-using NetCore_I2E_Sandip_poojara.Repositories.Interfaces;
-using NetCore_I2E_Sandip_poojara.Repositories.Implementations;
 using NetCore_I2E_Sandip_poojara.Middleware;
+using NetCore_I2E_Sandip_poojara.Services.Implementations;
+using NetCore_I2E_Sandip_poojara.Services.Interfaces;
+using NetCore_I2E_Sandip_poojara.Repositories.Implementations;
+using NetCore_I2E_Sandip_poojara.Repositories.Interfaces;
 using EventManagementSystem.Filters;
+using Microsoft.AspNetCore.Mvc;
 using EventManagementSystem.Data;
 using EventManagementSystem.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using NetCore_I2E_Sandip_poojara.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,31 +21,25 @@ builder.Services.AddControllersWithViews(options =>
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
 
-// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Dependency Injection
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ValidateModelFilter>();
 
-// Identity with Roles
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-})
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddRazorPages(); // Required for Identity
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
 // Middleware
-app.UseRequestLogging();
+app.UseRequestLogging();  // ✅ single call
 
 if (!app.Environment.IsDevelopment())
 {
@@ -57,11 +51,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Routes
+app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Events}/{action=Index}/{id?}");
@@ -70,9 +64,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.MapRazorPages(); // Identity Pages
-
-// Seed Admin & Roles
+// Seed roles & admin
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
