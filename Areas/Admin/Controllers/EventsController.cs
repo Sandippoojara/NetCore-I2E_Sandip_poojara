@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NetCore_I2E_Sandip_poojara.Services.Interfaces;
 
 namespace EventManagementSystem.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Route("Admin/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class EventsController : Controller
     {
         private readonly IEventService _eventService;

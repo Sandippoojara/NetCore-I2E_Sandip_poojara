@@ -1,36 +1,55 @@
-using NetCore_I2E_Sandip_poojara.Middleware;
-using EventManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetCore_I2E_Sandip_poojara.Data;
-using NetCore_I2E_Sandip_poojara.Repositories.Implementations;
-using NetCore_I2E_Sandip_poojara.Repositories.Interfaces;
-using NetCore_I2E_Sandip_poojara.Services.Implementations;
 using NetCore_I2E_Sandip_poojara.Services.Interfaces;
-
+using NetCore_I2E_Sandip_poojara.Services.Implementations;
+using NetCore_I2E_Sandip_poojara.Repositories.Interfaces;
+using NetCore_I2E_Sandip_poojara.Repositories.Implementations;
+using NetCore_I2E_Sandip_poojara.Middleware;
+using EventManagementSystem.Filters;
+using EventManagementSystem.Data;
+using EventManagementSystem.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using NetCore_I2E_Sandip_poojara.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// Add services
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<GlobalExceptionFilter>();
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
+
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Dependency Injection
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
-    
+builder.Services.AddScoped<ValidateModelFilter>();
 
+// Identity with Roles
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddRazorPages(); // Required for Identity
 
 var app = builder.Build();
 
+// Middleware
 app.UseRequestLogging();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -39,24 +58,25 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllerRoute(
-        name: "areas",
-        pattern: "{area:exists}/{controller=Events}/{action=Index}/{id?}");
-
-    endpoints.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}");
-});
-
-
+// Routes
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Events}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages(); // Identity Pages
+
+// Seed Admin & Roles
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await IdentitySeed.SeedRolesAndAdminAsync(services);
+}
 
 app.Run();
