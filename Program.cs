@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using EventManagementSystem.Data;
 using EventManagementSystem.Repositories.Interfaces;
 using NetCore_I2E_Sandip_poojara.Filters;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using NetCore_I2E_Sandip_poojara.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,11 +32,17 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ValidateModelFilter>();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
 
 builder.Services.AddRazorPages();
+builder.Services.AddSingleton<IEmailSender, NullEmailSender>();
 
 var app = builder.Build();
 

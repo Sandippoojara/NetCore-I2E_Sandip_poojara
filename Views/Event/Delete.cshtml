@@ -4,10 +4,10 @@
 
 <p>Are you sure you want to delete <strong>@Model.Title</strong>?</p>
 
-<form asp-action="DeleteConfirmed" method="post">
+<form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
     <button type="submit">Yes, Delete</button>
 </form>
+
 
 <a asp-action="Index">Cancel</a>

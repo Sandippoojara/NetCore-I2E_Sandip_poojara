@@ -1,0 +1,11 @@
+﻿@model EventManagementSystem.Models.Event
+
+<h2>Register for Event</h2>
+
+<p>Do you want to register for <strong>@Model.Title</strong> on @Model.EventDate.ToShortDateString()?</p>
+
+<form asp-action="RegisterConfirmed" asp-route-eventId="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Yes, Register</button>
+    <a asp-controller="Event" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

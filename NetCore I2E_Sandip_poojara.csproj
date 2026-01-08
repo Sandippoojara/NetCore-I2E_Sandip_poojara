@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\Events\" />
-    <Folder Include="Views\NewFolder\" />
   </ItemGroup>
 
 </Project>

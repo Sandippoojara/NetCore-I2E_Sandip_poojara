@@ -2,26 +2,61 @@
 
 <h2>Upcoming Events</h2>
 
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <p>Welcome, @User.Identity.Name! You can register for events below.</p>
+}
+
 <a asp-action="Create">Create New Event</a>
 
 <table class="table">
-    <tr>
-        <th>Title</th>
-        <th>Date</th>
-        <th>Location</th>
-        <th></th>
-    </tr>
-    @foreach (var item in Model)
-    {
+    <thead>
         <tr>
-            <td>@item.Title</td>
-            <td>@item.EventDate.ToShortDateString()</td>
-            <td>@item.Location</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">View</a> |
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Location</th>
+            <th>Actions</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.EventDate.ToShortDateString()</td>
+                <td>@item.Location</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">View</a> |
+
+                    @* Only admins can edit/delete *@
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+ 
+                    
+                    }
+
+                    @* Register button for logged-in users *@
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <a asp-controller="Registration"
+                           asp-action="Register"
+                           asp-route-eventId="@item.Id"
+                           class="btn btn-sm btn-primary">
+                            Register
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login"
+                           class="btn btn-sm btn-secondary">
+                            Login to Register
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>

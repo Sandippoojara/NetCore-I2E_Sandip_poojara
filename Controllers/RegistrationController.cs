@@ -1,68 +1,49 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using EventManagementSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetCore_I2E_Sandip_poojara.Services.Interfaces;
 using System.Security.Claims;
 
-namespace EventManagementSystem.Controllers
+[Authorize]
+[Route("register")]
+public class RegistrationController : Controller
 {
-    [Authorize]
-    [Route("register")]
-    public class RegistrationController : Controller
+    private readonly IEventService _eventService;
+    private readonly IRegistrationService _registrationService;
+
+    public RegistrationController(IEventService eventService, IRegistrationService registrationService)
     {
-        private readonly IRegistrationService _registrationService;
-        private readonly IEventService _eventService;
+        _eventService = eventService;
+        _registrationService = registrationService;
+    }
 
-        public RegistrationController(
-            IRegistrationService registrationService,
-            IEventService eventService)
+    [HttpGet("{eventId:int}")]
+    public async Task<IActionResult> Register(int eventId)
+    {
+        var evnt = await _eventService.GetByIdAsync(eventId);
+
+        if (evnt == null)
         {
-            _registrationService = registrationService;
-            _eventService = eventService;
+            return NotFound();
         }
 
-        // GET: /register/{eventId}
-        [HttpGet("{eventId:int}")]
-        public async Task<IActionResult> Register(int eventId)
+        return View(evnt); // ✅ pass event to view
+    }
+
+    [HttpPost("{eventId:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegisterConfirmed(int eventId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        await _registrationService.RegisterAsync(new Registration
         {
-            var evnt = await _eventService.GetByIdAsync(eventId);
-            if (evnt == null)
-                return NotFound();
+            EventId = eventId,
+            UserId = userId
+        });
 
-            ViewBag.EventId = eventId;
-            ViewBag.EventTitle = evnt.Title;
-
-            return View();
-        }
-
-        // POST: /register/{eventId}
-        [HttpPost("{eventId:int}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterConfirmed(int eventId)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            await _registrationService.RegisterAsync(new Models.Registration
-            {
-                EventId = eventId,
-                UserId = userId
-            });
-
-            return RedirectToAction(nameof(MyRegistrations));
-        }
-
-        // GET: /register/my
-        [HttpGet("my")]
-        public async Task<IActionResult> MyRegistrations()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var registrations = await _registrationService
-                .GetUserRegistrationsAsync(userId!);
-
-            return View(registrations);
-        }
+        return RedirectToAction("Index", "Event");
     }
 }

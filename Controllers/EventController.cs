@@ -37,7 +37,7 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
         }
 
         // Admin only
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -45,7 +45,7 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
         }
 
         // Admin only
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost("create")]
         [ServiceFilter(typeof(ValidateModelFilter))]
         [ValidateAntiForgeryToken]
@@ -80,20 +80,18 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Admin only (GET confirmation)
-        [Authorize(Roles = "Admin")]
+        // GET: events/delete/5
         [HttpGet("delete/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var evnt = await _eventService.GetByIdAsync(id);
-            if (evnt == null)
+            var eventDetails = await _eventService.GetByIdAsync(id);
+            if (eventDetails == null)
                 return NotFound();
 
-            return View(evnt);
+            return View(eventDetails); // returns Delete.cshtml
         }
 
-        // Admin only (POST)
-        [Authorize(Roles = "Admin")]
+        // POST: events/delete/5
         [HttpPost("delete/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -101,5 +99,8 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
             await _eventService.DeleteEventAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+
+
     }
 }
