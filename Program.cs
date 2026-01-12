@@ -44,6 +44,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IEmailSender, NullEmailSender>();
 
+builder.Services.AddScoped<AdminOnlyFilter>();
+
 var app = builder.Build();
 
 // Middleware

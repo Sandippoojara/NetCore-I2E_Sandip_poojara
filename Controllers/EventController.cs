@@ -37,7 +37,9 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
         }
 
         // Admin only
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [ServiceFilter(typeof(AdminOnlyFilter))]
+
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -45,7 +47,9 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
         }
 
         // Admin only
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
+        [ServiceFilter(typeof(AdminOnlyFilter))]
+
         [HttpPost("create")]
         [ServiceFilter(typeof(ValidateModelFilter))]
         [ValidateAntiForgeryToken]

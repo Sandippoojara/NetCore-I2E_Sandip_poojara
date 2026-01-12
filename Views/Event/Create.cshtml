@@ -1,26 +1,36 @@
 ﻿@model EventManagementSystem.Models.Event
 
-<h2>Create Event</h2>
+@{
+    ViewData["Title"] = "Create Event";
+}
 
-<form asp-action="Create" method="post">
-    @{
-        Html.AntiForgeryToken();
-    }
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
 
-    <label>Title</label>
-    <input asp-for="Title" class="form-control" />
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Create Event</h4>
+                </div>
 
-    <label>Description</label>
-    <textarea asp-for="Description" class="form-control"></textarea>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
 
-    <label>Date</label>
-    <input asp-for="EventDate" type="date" class="form-control" />
+                        <partial name="_EventForm" />
 
-    <label>Location</label>
-    <input asp-for="Location" class="form-control" />
+                        <div class="text-end mt-3">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                Save Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    <label>Capacity</label>
-    <input asp-for="Capacity" class="form-control" />
-
-    <button type="submit">Save</button>
-</form>
+        </div>
+    </div>
+</div>

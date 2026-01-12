@@ -1,10 +1,41 @@
 ﻿@model EventManagementSystem.Models.Event
 
-<h2>Edit Event</h2>
+@{
+    ViewData["Title"] = "Edit Event";
+}
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
 
-    <partial name="Create" model="Model" />
-</form>
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">Edit Event</h4>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <partial name="_EventForm" model="Model" />
+
+                        <div class="text-end mt-3">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                Update Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

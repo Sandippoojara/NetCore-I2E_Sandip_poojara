@@ -12,7 +12,7 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
         {
             _signInManager = signInManager;
         }
-
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
