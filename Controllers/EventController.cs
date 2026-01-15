@@ -36,21 +36,15 @@ namespace NetCore_I2E_Sandip_poojara.Controllers
             return View(eventDetails);
         }
 
-        // Admin only
-        //[Authorize(Roles = "Admin")]
         [ServiceFilter(typeof(AdminOnlyFilter))]
-
         [HttpGet("create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // Admin only
-        //[Authorize(Roles = "Admin")]
-        [ServiceFilter(typeof(AdminOnlyFilter))]
-
         [HttpPost("create")]
+        [ServiceFilter(typeof(AdminOnlyFilter))]
         [ServiceFilter(typeof(ValidateModelFilter))]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EventManagementSystem.Models.Event model)
